@@ -162,15 +162,10 @@ impl RewardBadgeContract {
 }
 
 #[cfg(test)]
+#[cfg(test)]
 mod test {
     use super::*;
     use soroban_sdk::{testutils::Address as _, Env};
-
-    #[test]
-    fn test_issue_badge() {
-        let env = Env::default();
-        let contract_id = env.register_contract(None, RewardBadgeContract);
-        let client = RewardBadgeContractClient::new(&env, &contract_id);
 
     #[test]
     fn test_issue_badge() {
