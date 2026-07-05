@@ -12,7 +12,7 @@ try {
     Write-Host "✅ Soroban CLI installed: $sorobanVersion" -ForegroundColor Green
 } catch {
     Write-Host "❌ Soroban CLI not found!" -ForegroundColor Red
-    Write-Host "Please install it with: cargo install --locked soroban-cli --features opt" -ForegroundColor Yellow
+    Write-Host "Please install it with: cargo install --locked soroban-cli" -ForegroundColor Yellow
     exit 1
 }
 

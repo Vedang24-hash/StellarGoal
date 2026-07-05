@@ -10,7 +10,7 @@ This guide will walk you through deploying your smart contracts to Stellar Testn
 
 ```powershell
 # Install Soroban CLI
-cargo install --locked soroban-cli --features opt
+cargo install --locked soroban-cli
 
 # Add wasm target (if not already added)
 rustup target add wasm32-unknown-unknown
@@ -336,6 +336,7 @@ You now have:
 **Solution:** Make sure you have the latest Rust:
 ```powershell
 rustup update
+cargo install --locked soroban-cli
 ```
 
 ### Issue: Contract deployment fails

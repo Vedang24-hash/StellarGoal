@@ -197,7 +197,7 @@ Use this to track your progress:
 2. See `DEPLOY_GUIDE.md` for detailed explanations
 
 ### Installation Issues?
-- Soroban won't install → Ensure latest Rust: `rustup update`
+- Soroban won't install → Run: `cargo install --locked soroban-cli` (without --features opt)
 - Node errors → Use Node.js 18 or higher
 
 ### Deployment Issues?

@@ -60,23 +60,14 @@ impl RewardBadgeContract {
         owner: Address,
         badge_type: BadgeType,
         metadata: String,
-    ) -> Result<String, String> {
-        // Verify caller (either owner or goal manager contract)
-        let goal_manager: Option<Address> = env.storage()
-            .instance()
-            .get(&DataKey::GoalManagerContract);
-
-        let caller = env.invoker();
-        
-        if caller != owner && Some(caller.clone()) != goal_manager {
-            return Err(String::from_str(&env, "Unauthorized"));
-        }
-
+    ) -> String {
+        // Verify the owner
         owner.require_auth();
 
         // Check if badge already exists for this user
-        if Self::has_badge(&env, &owner, &badge_type) {
-            return Err(String::from_str(&env, "Badge already issued"));
+        let has_badge_already = Self::has_badge(&env, &owner, &badge_type);
+        if has_badge_already {
+            panic!("Badge already issued");
         }
 
         // Generate unique badge ID
@@ -111,7 +102,7 @@ impl RewardBadgeContract {
 
         // Emit event
         env.events().publish(
-            (symbol_short!("badge"),),
+            (symbol_short!("issued"),),
             BadgeIssuedEvent {
                 badge_id: badge_id.clone(),
                 owner,
@@ -119,7 +110,7 @@ impl RewardBadgeContract {
             },
         );
 
-        Ok(badge_id)
+        badge_id
     }
 
     /// Get a badge by ID
@@ -185,9 +176,8 @@ mod test {
         let metadata = String::from_str(&env, "First goal completed");
 
         let badge_id = client.issue_badge(&owner, &BadgeType::FirstGoal, &metadata);
-        assert!(badge_id.is_ok());
-
-        let badge = client.get_badge(&badge_id.unwrap());
+        
+        let badge = client.get_badge(&badge_id);
         assert!(badge.is_some());
     }
 
@@ -201,14 +191,15 @@ mod test {
         let metadata = String::from_str(&env, "Achievement");
 
         // Issue multiple badges
-        client.issue_badge(&owner, &BadgeType::FirstGoal, &metadata).unwrap();
-        client.issue_badge(&owner, &BadgeType::GoalCompleter, &metadata).unwrap();
+        client.issue_badge(&owner, &BadgeType::FirstGoal, &metadata);
+        client.issue_badge(&owner, &BadgeType::GoalCompleter, &metadata);
 
         let badges = client.get_badges(&owner);
         assert_eq!(badges.len(), 2);
     }
 
     #[test]
+    #[should_panic(expected = "Badge already issued")]
     fn test_duplicate_badge_prevention() {
         let env = Env::default();
         let contract_id = env.register_contract(None, RewardBadgeContract);
@@ -217,10 +208,9 @@ mod test {
         let owner = Address::generate(&env);
         let metadata = String::from_str(&env, "Test");
 
-        client.issue_badge(&owner, &BadgeType::FirstGoal, &metadata).unwrap();
+        client.issue_badge(&owner, &BadgeType::FirstGoal, &metadata);
         
-        // Try to issue same badge type again
-        let result = client.issue_badge(&owner, &BadgeType::FirstGoal, &metadata);
-        assert!(result.is_err());
+        // Try to issue same badge type again - should panic
+        client.issue_badge(&owner, &BadgeType::FirstGoal, &metadata);
     }
 }

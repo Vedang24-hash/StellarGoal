@@ -303,12 +303,16 @@ Trigger on:
 
 **Stellar Testnet Contract Addresses:**
 
-- **GoalManagerContract**: `<YOUR_CONTRACT_ID_HERE>`
-- **RewardBadgeContract**: `<YOUR_CONTRACT_ID_HERE>`
+- **GoalManagerContract**: `CAEOERCHTGI77GIHJKCASHG5CZMDUM3W3IPIUF2XBN7TKXQKC37FZ7JQ`
+- **RewardBadgeContract**: `CBVX6QWEUARJ7G54KNXRHSDSNGESDQO2NPVPBY6MEG27XQ5AQSUBMR7Q`
 
-**Example Transaction Hash:** `<TRANSACTION_HASH_HERE>`
+**Example Transaction Hash:** `f8c2afb4b8db78c3097a1e87fd69f94c77381615fa3cefc3648f8b49083f75e2`
 
-[View on Stellar Expert →](https://stellar.expert/explorer/testnet/tx/<TRANSACTION_HASH>)
+[View GoalManager on Stellar Expert →](https://stellar.expert/explorer/testnet/contract/CAEOERCHTGI77GIHJKCASHG5CZMDUM3W3IPIUF2XBN7TKXQKC37FZ7JQ)
+
+[View RewardBadge on Stellar Expert →](https://stellar.expert/explorer/testnet/contract/CBVX6QWEUARJ7G54KNXRHSDSNGESDQO2NPVPBY6MEG27XQ5AQSUBMR7Q)
+
+[View Deployment Transaction →](https://stellar.expert/explorer/testnet/tx/f8c2afb4b8db78c3097a1e87fd69f94c77381615fa3cefc3648f8b49083f75e2)
 
 ---
 

@@ -19,7 +19,7 @@ Follow these steps in order to deploy your StellarGoal dApp.
 
 ```powershell
 # This will take 10-15 minutes to compile
-cargo install --locked soroban-cli --features opt
+cargo install --locked soroban-cli
 
 # Verify installation
 soroban --version
@@ -204,7 +204,7 @@ Use: Loom, OBS Studio, or Windows Game Bar (Win+G)
 ## 🆘 Troubleshooting
 
 ### Script says "Soroban not found"
-Run: `cargo install --locked soroban-cli --features opt`
+Run: `cargo install --locked soroban-cli`
 Wait 10-15 minutes for installation
 
 ### Contract deployment fails

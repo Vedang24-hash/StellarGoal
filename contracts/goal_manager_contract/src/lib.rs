@@ -101,13 +101,13 @@ impl GoalManagerContract {
         title: String,
         target_amount: i128,
         category: GoalCategory,
-    ) -> Result<String, String> {
+    ) -> String {
         // Verify the owner
         owner.require_auth();
 
         // Validate inputs
         if target_amount <= 0 {
-            return Err(String::from_str(&env, "Target amount must be positive"));
+            panic!("Target amount must be positive");
         }
 
         // Generate unique goal ID
@@ -150,7 +150,7 @@ impl GoalManagerContract {
 
         // Emit event
         env.events().publish(
-            (symbol_short!("goal_created"),),
+            (symbol_short!("goal_new"),),
             GoalCreatedEvent {
                 goal_id: goal_id.clone(),
                 owner,
@@ -158,7 +158,7 @@ impl GoalManagerContract {
             },
         );
 
-        Ok(goal_id)
+        goal_id
     }
 
     /// Deposit XLM to a goal
@@ -167,24 +167,24 @@ impl GoalManagerContract {
         goal_id: String,
         depositor: Address,
         amount: i128,
-    ) -> Result<(), String> {
+    ) {
         // Verify depositor
         depositor.require_auth();
 
         // Validate amount
         if amount <= 0 {
-            return Err(String::from_str(&env, "Deposit amount must be positive"));
+            panic!("Deposit amount must be positive");
         }
 
         // Load goal
         let mut goal: Goal = env.storage()
             .persistent()
             .get(&DataKey::Goal(goal_id.clone()))
-            .ok_or(String::from_str(&env, "Goal not found"))?;
+            .expect("Goal not found");
 
         // Check if goal is active
         if goal.status != GoalStatus::Active {
-            return Err(String::from_str(&env, "Goal is not active"));
+            panic!("Goal is not active");
         }
 
         // Update goal balance
@@ -210,7 +210,7 @@ impl GoalManagerContract {
 
         // Emit event
         env.events().publish(
-            (symbol_short!("deposit"),),
+            (symbol_short!("deposited"),),
             DepositMadeEvent {
                 goal_id,
                 depositor,
@@ -218,12 +218,10 @@ impl GoalManagerContract {
                 new_balance: goal.current_amount,
             },
         );
-
-        Ok(())
     }
 
     /// Complete a goal and issue badge
-    pub fn complete_goal(env: Env, goal_id: String, owner: Address) -> Result<(), String> {
+    pub fn complete_goal(env: Env, goal_id: String, owner: Address) {
         // Verify owner
         owner.require_auth();
 
@@ -231,20 +229,20 @@ impl GoalManagerContract {
         let mut goal: Goal = env.storage()
             .persistent()
             .get(&DataKey::Goal(goal_id.clone()))
-            .ok_or(String::from_str(&env, "Goal not found"))?;
+            .expect("Goal not found");
 
         // Verify ownership
         if goal.owner != owner {
-            return Err(String::from_str(&env, "Not goal owner"));
+            panic!("Not goal owner");
         }
 
         // Check if goal can be completed
         if goal.current_amount < goal.target_amount {
-            return Err(String::from_str(&env, "Target not reached"));
+            panic!("Target not reached");
         }
 
         if goal.status != GoalStatus::Active {
-            return Err(String::from_str(&env, "Goal already completed"));
+            panic!("Goal already completed");
         }
 
         // Update goal status
@@ -275,8 +273,6 @@ impl GoalManagerContract {
         //     &Symbol::new(&env, "issue_badge"),
         //     (&owner, &String::from_str(&env, "goal_completer"))
         // );
-
-        Ok(())
     }
 
     /// Get a goal by ID
@@ -325,9 +321,8 @@ mod test {
         let target_amount: i128 = 1000_0000000; // 1000 XLM
 
         let goal_id = client.create_goal(&owner, &title, &target_amount, &GoalCategory::Emergency);
-        assert!(goal_id.is_ok());
-
-        let goal = client.get_goal(&goal_id.unwrap());
+        
+        let goal = client.get_goal(&goal_id);
         assert!(goal.is_some());
     }
 
@@ -341,11 +336,10 @@ mod test {
         let title = String::from_str(&env, "Vacation Fund");
         let target_amount: i128 = 500_0000000;
 
-        let goal_id = client.create_goal(&owner, &title, &target_amount, &GoalCategory::Vacation).unwrap();
+        let goal_id = client.create_goal(&owner, &title, &target_amount, &GoalCategory::Vacation);
         
         let deposit_amount: i128 = 100_0000000;
-        let result = client.deposit_to_goal(&goal_id, &owner, &deposit_amount);
-        assert!(result.is_ok());
+        client.deposit_to_goal(&goal_id, &owner, &deposit_amount);
 
         let goal = client.get_goal(&goal_id).unwrap();
         assert_eq!(goal.current_amount, deposit_amount);
@@ -361,14 +355,13 @@ mod test {
         let title = String::from_str(&env, "Test Goal");
         let target_amount: i128 = 100_0000000;
 
-        let goal_id = client.create_goal(&owner, &title, &target_amount, &GoalCategory::Other).unwrap();
+        let goal_id = client.create_goal(&owner, &title, &target_amount, &GoalCategory::Other);
         
         // Deposit to reach target
-        client.deposit_to_goal(&goal_id, &owner, &target_amount).unwrap();
+        client.deposit_to_goal(&goal_id, &owner, &target_amount);
 
         // Complete goal
-        let result = client.complete_goal(&goal_id, &owner);
-        assert!(result.is_ok());
+        client.complete_goal(&goal_id, &owner);
 
         let goal = client.get_goal(&goal_id).unwrap();
         assert_eq!(goal.status, GoalStatus::Completed);
