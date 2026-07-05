@@ -301,6 +301,8 @@ Trigger on:
 
 ## 🌐 Deployed Contracts
 
+**Live Demo:** https://stellargoal.vercel.app
+
 **Stellar Testnet Contract Addresses:**
 
 - **GoalManagerContract**: `CAEOERCHTGI77GIHJKCASHG5CZMDUM3W3IPIUF2XBN7TKXQKC37FZ7JQ`
