@@ -172,6 +172,14 @@ mod test {
         let contract_id = env.register_contract(None, RewardBadgeContract);
         let client = RewardBadgeContractClient::new(&env, &contract_id);
 
+    #[test]
+    fn test_issue_badge() {
+        let env = Env::default();
+        env.mock_all_auths();
+        
+        let contract_id = env.register_contract(None, RewardBadgeContract);
+        let client = RewardBadgeContractClient::new(&env, &contract_id);
+
         let owner = Address::generate(&env);
         let metadata = String::from_str(&env, "First goal completed");
 
@@ -184,6 +192,8 @@ mod test {
     #[test]
     fn test_get_badges() {
         let env = Env::default();
+        env.mock_all_auths();
+        
         let contract_id = env.register_contract(None, RewardBadgeContract);
         let client = RewardBadgeContractClient::new(&env, &contract_id);
 
@@ -202,6 +212,8 @@ mod test {
     #[should_panic(expected = "Badge already issued")]
     fn test_duplicate_badge_prevention() {
         let env = Env::default();
+        env.mock_all_auths();
+        
         let contract_id = env.register_contract(None, RewardBadgeContract);
         let client = RewardBadgeContractClient::new(&env, &contract_id);
 

@@ -313,6 +313,8 @@ mod test {
     #[test]
     fn test_create_goal() {
         let env = Env::default();
+        env.mock_all_auths();
+        
         let contract_id = env.register_contract(None, GoalManagerContract);
         let client = GoalManagerContractClient::new(&env, &contract_id);
 
@@ -329,6 +331,8 @@ mod test {
     #[test]
     fn test_deposit_to_goal() {
         let env = Env::default();
+        env.mock_all_auths();
+        
         let contract_id = env.register_contract(None, GoalManagerContract);
         let client = GoalManagerContractClient::new(&env, &contract_id);
 
@@ -348,6 +352,8 @@ mod test {
     #[test]
     fn test_complete_goal() {
         let env = Env::default();
+        env.mock_all_auths();
+        
         let contract_id = env.register_contract(None, GoalManagerContract);
         let client = GoalManagerContractClient::new(&env, &contract_id);
 
