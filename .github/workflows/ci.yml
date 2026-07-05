@@ -1,0 +1,140 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload frontend build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+          retention-days: 7
+
+  contract-tests:
+    name: Smart Contract Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          override: true
+
+      - name: Install Soroban CLI
+        run: |
+          cargo install --locked soroban-cli --features opt
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Test GoalManager Contract
+        working-directory: ./contracts/goal_manager_contract
+        run: cargo test --verbose
+
+      - name: Test RewardBadge Contract
+        working-directory: ./contracts/reward_badge_contract
+        run: cargo test --verbose
+
+      - name: Build GoalManager Contract
+        working-directory: ./contracts/goal_manager_contract
+        run: cargo build --target wasm32-unknown-unknown --release
+
+      - name: Build RewardBadge Contract
+        working-directory: ./contracts/reward_badge_contract
+        run: cargo build --target wasm32-unknown-unknown --release
+
+      - name: Upload contract artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-builds
+          path: |
+            contracts/goal_manager_contract/target/wasm32-unknown-unknown/release/*.wasm
+            contracts/reward_badge_contract/target/wasm32-unknown-unknown/release/*.wasm
+          retention-days: 7
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+
+      - name: Run Rust format check
+        run: |
+          cd contracts/goal_manager_contract && cargo fmt -- --check
+          cd ../reward_badge_contract && cargo fmt -- --check
+
+      - name: Run Clippy
+        run: |
+          cd contracts/goal_manager_contract && cargo clippy -- -D warnings
+          cd ../reward_badge_contract && cargo clippy -- -D warnings
+
+  status-check:
+    name: All Tests Passed
+    needs: [frontend-tests, contract-tests, lint]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: All tests passed
+        run: echo "All CI checks passed successfully!"
