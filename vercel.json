@@ -1,0 +1,20 @@
+{
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "cd frontend && npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_STELLAR_NETWORK": "TESTNET",
+    "VITE_STELLAR_RPC_URL": "https://soroban-testnet.stellar.org",
+    "VITE_NETWORK_PASSPHRASE": "Test SDF Network ; September 2015",
+    "VITE_HORIZON_URL": "https://horizon-testnet.stellar.org",
+    "VITE_GOAL_MANAGER_CONTRACT_ID": "CAEOERCHTGI77GIHJKCASHG5CZMDUM3W3IPIUF2XBN7TKXQKC37FZ7JQ",
+    "VITE_REWARD_BADGE_CONTRACT_ID": "CBVX6QWEUARJ7G54KNXRHSDSNGESDQO2NPVPBY6MEG27XQ5AQSUBMR7Q"
+  }
+}
