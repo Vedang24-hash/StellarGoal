@@ -1,49 +1,36 @@
-import StellarSdk from '@stellar/stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 // Horizon Server for balance queries
 const horizonUrl = import.meta.env.VITE_HORIZON_URL || 'https://horizon-testnet.stellar.org';
+// Clean the URL to remove any unwanted prefixes or whitespace
+const cleanHorizonUrl = String(horizonUrl)
+  .trim()
+  .replace(/^type:\s*/, '')  // Remove 'type:' prefix if present
+  .replace(/^["']|["']$/g, ''); // Remove quotes if present
 
-// Initialize server - handle both old and new SDK versions
+console.log('Horizon URL configured:', cleanHorizonUrl);
+
+// Initialize server with fallback
 let server;
 try {
-  // Try new SDK structure first
-  if (StellarSdk.Horizon && StellarSdk.Horizon.Server) {
-    server = new StellarSdk.Horizon.Server(horizonUrl);
-  } else if (StellarSdk.Server) {
-    // Fallback to old structure
-    server = new StellarSdk.Server(horizonUrl);
-  } else {
-    // Last resort - try direct instantiation
-    const { Server } = StellarSdk;
-    if (Server) {
-      server = new Server(horizonUrl);
-    } else {
-      console.error('Could not find Server constructor in Stellar SDK');
-      // Create a basic server object using fetch
-      server = {
-        loadAccount: async (address) => {
-          const response = await fetch(`${horizonUrl}/accounts/${address}`);
-          if (!response.ok) throw new Error('Account not found');
-          return response.json();
-        },
-        submitTransaction: async (transaction) => {
-          const response = await fetch(`${horizonUrl}/transactions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `tx=${encodeURIComponent(transaction.toEnvelope().toXDR('base64'))}`
-          });
-          if (!response.ok) throw new Error('Transaction failed');
-          return response.json();
-        }
-      };
-    }
+  // Try Horizon.Server (new SDK structure)
+  if (StellarSdk?.Horizon?.Server) {
+    server = new StellarSdk.Horizon.Server(cleanHorizonUrl);
+  } 
+  // Try direct Server (older SDK versions)
+  else if (StellarSdk?.Server) {
+    server = new StellarSdk.Server(cleanHorizonUrl);
+  }
+  // Fallback to fetch-based implementation
+  else {
+    throw new Error('No Server constructor found');
   }
 } catch (e) {
-  console.error('Failed to initialize Horizon server:', e);
-  // Fallback server implementation
+  console.warn('Using fetch-based Horizon client:', e.message);
+  // Fallback server implementation using fetch
   server = {
     loadAccount: async (address) => {
-      const response = await fetch(`${horizonUrl}/accounts/${address}`);
+      const response = await fetch(`${cleanHorizonUrl}/accounts/${address}`);
       if (!response.ok) {
         if (response.status === 404) {
           const error = new Error('Account not found');
@@ -52,6 +39,15 @@ try {
         }
         throw new Error('Failed to load account');
       }
+      return response.json();
+    },
+    submitTransaction: async (transaction) => {
+      const response = await fetch(`${cleanHorizonUrl}/transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `tx=${encodeURIComponent(transaction.toEnvelope().toXDR('base64'))}`
+      });
+      if (!response.ok) throw new Error('Transaction failed');
       return response.json();
     }
   };
@@ -69,7 +65,7 @@ export const getBalance = async (address) => {
   try {
     if (!server) {
       console.error('Server is null, attempting to fetch directly');
-      const response = await fetch(`${horizonUrl}/accounts/${address}`);
+      const response = await fetch(`${cleanHorizonUrl}/accounts/${address}`);
       if (!response.ok) {
         if (response.status === 404) {
           return '0.0000000';
@@ -112,15 +108,20 @@ export const sendXLM = async (sourceAddress, destinationAddress, amount, signTra
     // Load source account
     const sourceAccount = await server.loadAccount(sourceAddress);
 
+    // Get SDK classes
+    const TransactionBuilder = StellarSdk.TransactionBuilder || StellarSdk.default?.TransactionBuilder;
+    const Operation = StellarSdk.Operation || StellarSdk.default?.Operation;
+    const Asset = StellarSdk.Asset || StellarSdk.default?.Asset;
+
     // Build transaction
-    const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
+    const transaction = new TransactionBuilder(sourceAccount, {
       fee: '100000', // 0.01 XLM
       networkPassphrase
     })
       .addOperation(
-        StellarSdk.Operation.payment({
+        Operation.payment({
           destination: destinationAddress,
-          asset: StellarSdk.Asset.native(),
+          asset: Asset.native(),
           amount: amount.toString()
         })
       )
@@ -136,7 +137,7 @@ export const sendXLM = async (sourceAddress, destinationAddress, amount, signTra
 
     // Submit transaction
     const transactionResult = await server.submitTransaction(
-      StellarSdk.TransactionBuilder.fromXDR(signedXDR, networkPassphrase)
+      TransactionBuilder.fromXDR(signedXDR, networkPassphrase)
     );
 
     return {
@@ -167,7 +168,8 @@ export const sendXLM = async (sourceAddress, destinationAddress, amount, signTra
  */
 export const isValidStellarAddress = (address) => {
   try {
-    StellarSdk.Keypair.fromPublicKey(address);
+    const Keypair = StellarSdk.Keypair || StellarSdk.default?.Keypair;
+    Keypair.fromPublicKey(address);
     return true;
   } catch {
     return false;

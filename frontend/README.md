@@ -2,6 +2,25 @@
 
 React + Vite frontend for the StellarGoal decentralized savings tracker.
 
+## ✨ Recent Updates (January 2026)
+
+### Bug Fixes
+- 🐛 **Fixed Console Errors**: Resolved `TypeError: Failed to fetch. URL scheme "type" is not supported`
+  - Added URL sanitization in `stellar.js`
+  - Regex cleanup for malformed Horizon URLs
+  
+### UI/UX Improvements
+- 🎨 **Enhanced Button Interactions**:
+  - Fixed navbar button text visibility (Send XLM, Disconnect Wallet)
+  - Added hover effects with lift animation
+  - Implemented click/press states for visual feedback
+  
+- 📱 **Mobile Responsiveness Overhaul**:
+  - Reduced card padding by 60% for professional compact design
+  - Optimized spacing across all breakpoints
+  - Ultra-compact mode for devices ≤380px
+  - Better form layouts for small screens
+
 ## 🚀 Quick Start
 
 ```bash
@@ -61,6 +80,11 @@ npm test -- --coverage # With coverage
 - **No UI libraries** (no Tailwind, Bootstrap, etc.)
 - **Responsive design** with CSS Grid & Flexbox
 - **CSS variables** for theming
+- **Professional mobile optimization**:
+  - Compact card layouts with 60% reduced padding
+  - Responsive breakpoints: 768px, 480px, 380px
+  - Smooth animations and transitions
+  - Interactive button states (hover, active, focus)
 
 ## 🔗 Dependencies
 

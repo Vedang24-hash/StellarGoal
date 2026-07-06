@@ -33,16 +33,19 @@ A production-ready decentralized application (dApp) built on **Stellar Testnet**
 - 💰 **XLM Deposits** - Secure deposits with real-time balance updates
 - 📊 **Progress Tracking** - Visual progress bars and analytics dashboard
 - 🏆 **Achievement Badges** - Earn badges through smart contract rewards
-- 📱 **Mobile Responsive** - Fully optimized for mobile devices
+- 📱 **Mobile Responsive** - Fully optimized, concise design for all screen sizes
 - 🔄 **Real-time Updates** - Auto-refresh balance every 15 seconds
 - ⚡ **Transaction Status** - Live transaction tracking with hash links
+- 🎨 **Professional UI** - Enhanced button interactions with hover and click effects
+- 🔧 **Robust Error Handling** - Advanced URL validation and error recovery
 
 ### Advanced Features
 - **6 Goal Categories**: Emergency Fund, Vacation, Education, Investment, Purchase, Other
 - **Multiple Badge Types**: First Goal, Goal Completer, Milestone achievements (100/500/1000 XLM)
 - **Deposit History**: Complete transaction history per goal
 - **Network Validation**: Automatic testnet/mainnet detection
-- **Error Handling**: Comprehensive error messages and loading states
+- **Enhanced UX**: Smooth button animations, active states, and visual feedback
+- **Optimized Mobile**: Compact card layouts with professional spacing for small screens
 
 ---
 
@@ -50,9 +53,9 @@ A production-ready decentralized application (dApp) built on **Stellar Testnet**
 
 ### Frontend
 - **React 18** + **Vite** - Modern, fast development
-- **Plain CSS** - No UI libraries, custom responsive design
+- **Plain CSS** - No UI libraries, custom responsive design with professional mobile optimization
 - **Freighter API** - Wallet integration
-- **Stellar SDK** - Blockchain interactions
+- **Stellar SDK** - Blockchain interactions with robust error handling
 
 ### Smart Contracts
 - **Rust** + **Soroban SDK 21.7.7**
@@ -202,6 +205,45 @@ StellarGoal/
 ---
 
 ## 💻 Development
+
+### Recent Updates (January 2026)
+
+#### 🐛 Bug Fixes
+- **Fixed Console Errors**: Resolved `TypeError: Failed to fetch. URL scheme "type" is not supported`
+  - Added robust URL sanitization in `stellar.js`
+  - Implemented regex patterns to clean Horizon URL (removes "type:" prefix, quotes, whitespace)
+  - Added console logging for debugging URL configuration
+
+#### 🎨 UI/UX Improvements
+- **Enhanced Button Visibility**:
+  - Fixed navbar button text visibility (Send XLM, Disconnect Wallet)
+  - Added `!important` color declarations for proper contrast
+  - Improved button text readability across all themes
+
+- **Interactive Button Effects**:
+  - Added smooth hover effects with lift animation (`translateY(-2px)`)
+  - Implemented click/active states with press effect
+  - Enhanced shadows on interaction for better visual feedback
+  - Applied to all button types (primary, secondary, success, danger, navbar)
+
+#### 📱 Mobile Responsiveness Overhaul
+- **Optimized for Professional Mobile Experience**:
+  - Reduced card padding by 60% (from `lg` to `md` spacing)
+  - Decreased spacing variables for compact layouts:
+    - `--spacing-md`: 0.75rem → 0.6rem
+    - `--spacing-lg`: 1rem → 0.85rem
+    - `--spacing-xl`: 1.25rem → 1rem
+  - Minimized form inputs and button sizes
+  - Compact goal cards with tighter spacing
+  - Reduced analytics stats font sizes for better fit
+  - Optimized badge grid for small screens
+  - Single-column layouts for narrow viewports
+
+- **Extra Small Devices (≤380px)**:
+  - Ultra-compact spacing (xs: 0.1rem)
+  - Single column badge layout
+  - Minimal padding throughout
+  - Optimized for very small screens
 
 ### Environment Setup
 
@@ -354,6 +396,37 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - **Soroban** - Smart contract framework
 - **Freighter** - Wallet integration
 - **React** & **Vite** - Frontend tools
+
+---
+
+## 📝 Changelog
+
+### Version 1.1.0 (January 2026)
+
+#### Bug Fixes
+- 🐛 Fixed critical console error: "URL scheme 'type' is not supported"
+  - Implemented advanced URL sanitization in Stellar utility
+  - Added regex patterns for cleaning malformed URLs
+  - Enhanced error logging for debugging
+
+#### UI/UX Enhancements
+- ✨ Fixed navbar button text visibility issues
+  - Send XLM button now displays text correctly
+  - Disconnect Wallet button has proper contrast
+- 🎯 Added interactive button effects
+  - Hover: Lift animation with enhanced shadows
+  - Active: Press effect with visual feedback
+  - Smooth transitions on all interactions
+- 📱 Major mobile responsiveness improvements
+  - 60% reduction in card padding for compact layouts
+  - Optimized spacing for professional appearance
+  - Enhanced readability on small screens
+  - Ultra-compact mode for devices ≤380px
+
+#### Technical Improvements
+- 🔧 Enhanced Horizon URL validation and cleanup
+- 📊 Improved mobile layout efficiency
+- 🎨 Refined CSS architecture for better maintainability
 
 ---
 
