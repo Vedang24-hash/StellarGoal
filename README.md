@@ -2,11 +2,11 @@
 
 A production-ready decentralized application (dApp) built on **Stellar Testnet** that empowers users to create, track, and complete savings goals using XLM. Features automated achievement badges through Soroban smart contracts with inter-contract communication.
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://stellargoal.vercel.app)
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://stellar-goal.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Stellar](https://img.shields.io/badge/Stellar-Testnet-purple)](https://stellar.org)
 
-**🌐 Live Demo:** [stellargoal.vercel.app](https://stellargoal.vercel.app)
+**🌐 Live Demo:** [stellar-goal.vercel.app](https://stellar-goal.vercel.app)
 
 ---
 
@@ -102,6 +102,8 @@ Visit http://localhost:5173 to see the app!
 4. **Track Progress** - View analytics and progress bars
 5. **Complete Goals** - Click "Complete Goal" when target is reached
 6. **Earn Badges** - Badges are automatically issued on completion
+
+**🌐 Live Demo:** https://stellar-goal.vercel.app
 
 ---
 
@@ -440,7 +442,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## 🔗 Links
 
-- **Live Demo:** https://stellargoal.vercel.app
+- **Live Demo:** https://stellar-goal.vercel.app
 - **GitHub:** https://github.com/Vedang24-hash/StellarGoal
 - **Stellar Expert:** [View Contracts](https://stellar.expert/explorer/testnet)
 - **Stellar Laboratory:** [Get Testnet XLM](https://laboratory.stellar.org)

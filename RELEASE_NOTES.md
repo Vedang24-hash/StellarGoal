@@ -223,7 +223,7 @@ npm run dev
 Thank you for using StellarGoal! We're committed to continuously improving your experience.
 
 **Report Issues:** [GitHub Issues](https://github.com/Vedang24-hash/StellarGoal/issues)  
-**Live Demo:** [stellargoal.vercel.app](https://stellargoal.vercel.app)
+**Live Demo:** [stellar-goal.vercel.app](https://stellar-goal.vercel.app)
 
 ---
 
