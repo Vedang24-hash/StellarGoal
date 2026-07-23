@@ -46,6 +46,7 @@ const CreateGoalForm = ({ ownerAddress, onGoalCreated }) => {
       const newGoal = {
         id: `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         owner: ownerAddress,
+        escrowAddress: ownerAddress, // In production, this would be contract-controlled escrow
         title: title.trim(),
         targetAmount: parseFloat(targetAmount),
         currentAmount: 0,

@@ -3,7 +3,101 @@
 All notable changes to the StellarGoal project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.html).
+
+## [1.2.0] - 2026-07-23
+
+### Fixed
+- **CRITICAL: Deposit Transaction Bug** - Deposits now properly deduct XLM from wallet
+  - Integrated Freighter wallet signing for deposit transactions
+  - Deposits now require blockchain confirmation before updating UI
+  - XLM is actually transferred from user wallet to goal escrow
+  - Added escrow address to goal creation (currently set to owner for demo)
+  - Transaction hashes now recorded with each deposit
+  - Proper error handling for failed transactions
+  - User-friendly error messages for common failure scenarios:
+    - User declined transaction
+    - Insufficient balance (with 1 XLM reserve reminder)
+    - Freighter wallet not found/unlocked
+  - Fixed Freighter API detection using `@stellar/freighter-api` import
+  - Added `isConnected()` and `isAllowed()` checks before signing
+
+### Added
+- **Transaction Hash Display on Goal Cards**
+  - Each goal card shows 3 most recent transactions
+  - Transaction amount, date, and clickable hash link
+  - Direct links to Stellar Expert for verification
+  - "View all transactions" button if more than 3 deposits
+  - Mobile-responsive transaction display
+
+- **Transaction Proof Component (Mentor Verification)**
+  - Dedicated section for blockchain verification
+  - Shows wallet address with link to Stellar Expert
+  - Displays total transaction count and total XLM deposited
+  - Complete list of ALL transactions with full details
+  - Each transaction shows:
+    - Transaction number
+    - Goal name
+    - Amount deposited
+    - Date and time
+    - Full transaction hash (desktop) or shortened (mobile)
+    - Ledger number
+    - Clickable link to Stellar Expert
+  - Prominent "For Mentors" message explaining verification
+
+- **Enhanced Deposit History Modal**
+  - Transaction hashes displayed with each deposit
+  - Shortened hash format (8 chars each side)
+  - Clickable links to Stellar Expert
+  - Visual styling with hover effects
+  - Mobile-responsive layout
+
+- **Documentation**
+  - Created `TRANSACTION_VERIFICATION.md` - Complete guide for mentors
+  - Explains how to verify transactions on blockchain
+  - Step-by-step verification instructions
+  - Example transaction flow
+  - Red flags for fake transactions vs. real implementation
+  - Links to Stellar Expert and other tools
+
+### Changed
+- **DepositForm.jsx** - Complete rewrite of deposit logic
+  - Now uses `sendXLM()` function from stellar.js
+  - Requires Freighter signature before updating localStorage
+  - Added validation for Freighter wallet availability
+  - Deposits include depositor's public key (not just goal owner)
+  - Uses `freighter` import from `@stellar/freighter-api`
+  - Checks `isConnected()` and `isAllowed()` before operations
+  
+- **CreateGoalForm.jsx** - Added escrow address to goals
+  - Each goal now has an `escrowAddress` property
+  - Currently set to owner address for demo (self-transfer)
+  - Ready for future contract-controlled escrow implementation
+
+- **GoalCard.jsx** - Added transaction display section
+  - Shows recent transactions directly on card
+  - Imports `getTransactionUrl` and `shortenAddress` from stellar.js
+  - Displays transaction hashes with verification links
+  - Responsive design for mobile devices
+
+- **DepositHistory.jsx** - Enhanced deposit display
+  - Shows transaction hash with link to explorer
+  - Uses `shortenAddress()` for compact display
+  - Improved layout with details section
+  - Better mobile responsiveness for transaction info
+
+- **App.jsx** - Added TransactionProof component
+  - New section after badges
+  - Available when wallet connected
+  - Automatically loads all user transactions
+
+- **App.css** - Comprehensive transaction styling
+  - Goal card transaction section styles
+  - Transaction Proof component complete styling
+  - Transaction link hover effects and animations
+  - Mobile-responsive breakpoints
+  - Desktop: full transaction hashes
+  - Mobile: shortened hashes with responsive layout
 
 ## [1.1.0] - 2026-01-07
 

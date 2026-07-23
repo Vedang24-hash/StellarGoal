@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { calculateProgress, getCategoryDisplayName, formatXLM } from '../utils/contractHelpers';
+import { getTransactionUrl, shortenAddress } from '../utils/stellar';
 import DepositForm from './DepositForm';
 import DepositHistory from './DepositHistory';
 
@@ -105,6 +106,52 @@ const GoalCard = ({ goal, onGoalUpdated, onGoalCompleted }) => {
             goalId={goal.id}
             onClose={() => setShowHistory(false)}
           />
+        )}
+
+        {/* Recent Transactions Section - Always Visible for Accountability */}
+        {goal.deposits && goal.deposits.length > 0 && (
+          <div className="goal-transactions">
+            <div className="transactions-header">
+              <h5>🔗 Recent Transactions</h5>
+              <small>{goal.deposits.length} total</small>
+            </div>
+            <div className="transactions-list">
+              {goal.deposits.slice(-3).reverse().map((deposit) => (
+                <div key={deposit.id} className="transaction-item">
+                  <div className="transaction-info">
+                    <span className="transaction-amount">
+                      +{formatXLM(deposit.amount)} XLM
+                    </span>
+                    <span className="transaction-date">
+                      {new Date(deposit.timestamp).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {deposit.txHash ? (
+                    <a
+                      href={getTransactionUrl(deposit.txHash, 'TESTNET')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transaction-hash-link"
+                      title={`View transaction ${deposit.txHash} on Stellar Expert`}
+                    >
+                      <span className="hash-icon">🔗</span>
+                      <span className="hash-text">{shortenAddress(deposit.txHash, 8)}</span>
+                    </a>
+                  ) : (
+                    <span className="transaction-no-hash">No tx hash</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            {goal.deposits.length > 3 && (
+              <button
+                onClick={() => setShowHistory(true)}
+                className="button-link"
+              >
+                View all {goal.deposits.length} transactions →
+              </button>
+            )}
+          </div>
         )}
 
         <div className="goal-actions">

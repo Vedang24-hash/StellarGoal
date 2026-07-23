@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { sendXLM } from '../utils/stellar';
+import freighter from '@stellar/freighter-api';
 
 /**
  * Deposit Form Component
@@ -31,19 +33,65 @@ const DepositForm = ({ goal, onDepositSuccess, onCancel }) => {
     setDepositing(true);
 
     try {
-      // Update goal in localStorage
+      // Check if Freighter is available and connected
+      const isConnected = await freighter.isConnected();
+      if (!isConnected) {
+        throw new Error('Freighter wallet not found. Please install Freighter extension.');
+      }
+
+      // Check if we have permission
+      const isAllowed = await freighter.isAllowed();
+      if (!isAllowed) {
+        throw new Error('Please connect your Freighter wallet first.');
+      }
+
+      // Get user's public key
+      let publicKey;
+      try {
+        publicKey = await freighter.getPublicKey();
+      } catch (keyError) {
+        console.error('Error getting public key:', keyError);
+        throw new Error('Please unlock your Freighter wallet and try again.');
+      }
+      
+      // Get goal escrow address (in production, this would be the contract's escrow account)
+      // For demo purposes, we'll use a designated escrow address from env or generate one
+      const escrowAddress = import.meta.env.VITE_ESCROW_ADDRESS || goal.escrowAddress || goal.owner;
+      
+      // If sending to self (demo mode), show warning
+      if (escrowAddress === publicKey) {
+        console.warn('Demo mode: Sending to self. In production, this would go to contract escrow.');
+      }
+
+      // Send XLM transaction through Freighter
+      const result = await sendXLM(
+        publicKey,
+        escrowAddress,
+        depositAmount.toString(),
+        freighter.signTransaction
+      );
+
+      if (!result.success) {
+        throw new Error('Transaction failed. Please try again.');
+      }
+
+      console.log('Deposit transaction successful:', result.hash);
+
+      // Update goal in localStorage after successful blockchain transaction
       const goals = JSON.parse(localStorage.getItem('stellargoal_goals') || '[]');
       const goalIndex = goals.findIndex(g => g.id === goal.id);
       
       if (goalIndex !== -1) {
         goals[goalIndex].currentAmount += depositAmount;
         
-        // Add deposit to history
+        // Add deposit to history with transaction hash
         const deposit = {
           id: `deposit_${Date.now()}`,
           amount: depositAmount,
           timestamp: Date.now(),
-          depositor: goal.owner
+          depositor: publicKey,
+          txHash: result.hash,
+          ledger: result.ledger
         };
         
         if (!goals[goalIndex].deposits) {
@@ -85,9 +133,22 @@ const DepositForm = ({ goal, onDepositSuccess, onCancel }) => {
         }
 
         setAmount('');
+      } else {
+        throw new Error('Goal not found');
       }
     } catch (err) {
-      setError(err.message || 'Failed to deposit');
+      console.error('Deposit error:', err);
+      
+      // User-friendly error messages
+      if (err.message.includes('User declined')) {
+        setError('Transaction cancelled by user');
+      } else if (err.message.includes('Insufficient balance')) {
+        setError('Insufficient XLM balance (remember to keep 1 XLM minimum reserve)');
+      } else if (err.message.includes('Freighter')) {
+        setError('Please install and unlock Freighter wallet extension');
+      } else {
+        setError(err.message || 'Failed to deposit. Please try again.');
+      }
     } finally {
       setDepositing(false);
     }

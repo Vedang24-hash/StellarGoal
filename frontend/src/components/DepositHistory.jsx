@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { formatXLM } from '../utils/stellar';
+import { formatXLM, getTransactionUrl, shortenAddress } from '../utils/stellar';
 
 /**
  * Deposit History Component
@@ -58,8 +58,23 @@ const DepositHistory = ({ goalId, onClose }) => {
                   <span className="deposit-icon">💰</span>
                   <span className="deposit-value">{formatXLM(deposit.amount)} XLM</span>
                 </div>
-                <div className="deposit-item-date">
-                  {new Date(deposit.timestamp).toLocaleString()}
+                <div className="deposit-item-details">
+                  <div className="deposit-item-date">
+                    {new Date(deposit.timestamp).toLocaleString()}
+                  </div>
+                  {deposit.txHash && (
+                    <div className="deposit-item-tx">
+                      <a 
+                        href={getTransactionUrl(deposit.txHash, 'TESTNET')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="tx-link"
+                        title={`View transaction ${deposit.txHash}`}
+                      >
+                        🔗 Tx: {shortenAddress(deposit.txHash, 6)}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

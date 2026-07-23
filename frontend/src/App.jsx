@@ -9,6 +9,7 @@ import CreateGoalForm from './components/CreateGoalForm';
 import GoalsList from './components/GoalsList';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import BadgeSection from './components/BadgeSection';
+import TransactionProof from './components/TransactionProof';
 import './App.css';
 
 /**
@@ -105,6 +106,11 @@ function App() {
             {/* Badges Section */}
             <section className="section">
               <BadgeSection ownerAddress={wallet.address} />
+            </section>
+
+            {/* Transaction Proof Section - For Mentor Verification */}
+            <section className="section">
+              <TransactionProof walletAddress={wallet.address} />
             </section>
           </>
         )}
